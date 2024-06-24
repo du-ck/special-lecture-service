@@ -67,6 +67,10 @@ class LectureControllerTest {
         mockMvc.perform(get("/lectures/")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").exists());
+                .andExpect(jsonPath("$.data.lectures[*].title").exists())
+                .andExpect(jsonPath("$.data.lectures[*].description").exists())
+                .andExpect(jsonPath("$.data.lectures[*].capacity").exists())
+                .andExpect(jsonPath("$.data.lectures[*].lectureDate").exists())
+                .andExpect(jsonPath("$.data.lectures[*].currentEnrollment").exists());
     }
 }

@@ -18,15 +18,18 @@ public class LectureService {
     private final LectureRepository lectureRepository;
 
     public Optional<LecturesResponse> getLectures() {
-        List<Lecture> lectureList = lectureRepository.findAll();
+        Optional<List<Lecture>> lectureList = lectureRepository.findAllByActive('Y');
 
-        List<LectureDetail> responseLectureList = lectureList.stream()
-                .map(lecture -> LectureDetail.toDTO(lecture)).collect(Collectors.toList());
+        if (lectureList.isPresent()) {
+            List<LectureDetail> responseLectureList = lectureList.get().stream()
+                    .map(lecture -> LectureDetail.toDTO(lecture)).collect(Collectors.toList());
 
-        LecturesResponse result = LecturesResponse.builder()
-                .lectures(responseLectureList)
-                .build();
+            LecturesResponse result = LecturesResponse.builder()
+                    .lectures(responseLectureList)
+                    .build();
 
-        return Optional.of(result);
+            return Optional.of(result);
+        }
+        return Optional.empty();
     }
 }

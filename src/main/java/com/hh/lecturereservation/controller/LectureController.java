@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,7 +25,7 @@ public class LectureController {
     private final LectureService lectureService;
 
     /**
-     * 특강선택api (심화)
+     * 특강선택api (심화 )
      * 특강 목록을 조회할 수 있다.
      * 날짜별로 특강이 존재하고, 특강 시작시간 1시간 전(미정)까지 조회 및 신청이 가능하다.
      * 특강의 정원은 30명이 기본이고, 특강 목록 및 가능여부 등 조회가능해야한다.
@@ -32,11 +33,17 @@ public class LectureController {
      */
     @GetMapping("/")
     public ResponseEntity<ResponseData> lectures() {
-        List<LectureDetail> returnList = new ArrayList<>();
         ResponseData responseData = ResponseData.builder()
-                .data(LecturesResponse.builder()
-                        .lectures(returnList).build())
+                .data("No Data")
                 .build();
+
+        Optional<LecturesResponse> lectures = lectureService.getLectures();
+        if (lectures.isPresent()) {
+            responseData = ResponseData.builder()
+                    .data(lectures.get())
+                    .build();
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        }
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
