@@ -18,7 +18,7 @@ public class Lecture {
     @Id
     @Column(name = "lecture_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long lectureId = 0L;
+    private Long lectureId;
 
     @Column(length = 50, nullable = false)
     private String title;
@@ -29,6 +29,7 @@ public class Lecture {
     @Column(nullable = false)
     private int capacity;
 
+    @Builder.Default
     @Column(nullable = false)
     private char active = 'N';
 

@@ -19,7 +19,7 @@ public class ParticipantHistory {
     @Id
     @Column(name = "history_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long historyId = 0L;
+    private Long historyId;
 
     @Column(name = "participant_id", nullable = false)
     private int participantId;

@@ -1,7 +1,9 @@
 package com.hh.lecturereservation.controller;
 
 import com.hh.lecturereservation.dto.common.data.ResponseData;
+import com.hh.lecturereservation.dto.detail.LectureDetail;
 import com.hh.lecturereservation.dto.request.ApplyRequest;
+import com.hh.lecturereservation.dto.response.LecturesResponse;
 import com.hh.lecturereservation.service.LectureService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -9,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,8 +32,10 @@ public class LectureController {
      */
     @GetMapping("/")
     public ResponseEntity<ResponseData> lectures() {
+        List<LectureDetail> returnList = new ArrayList<>();
         ResponseData responseData = ResponseData.builder()
-                .data(null)
+                .data(LecturesResponse.builder()
+                        .lectures(returnList).build())
                 .build();
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
