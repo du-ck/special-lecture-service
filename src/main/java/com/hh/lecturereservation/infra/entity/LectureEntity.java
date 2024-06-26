@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.domain.entity;
+package com.hh.lecturereservation.infra.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "lecture")

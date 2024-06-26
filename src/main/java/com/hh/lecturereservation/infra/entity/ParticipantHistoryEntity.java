@@ -1,5 +1,6 @@
-package com.hh.lecturereservation.domain.entity;
+package com.hh.lecturereservation.infra.entity;
 
+import com.hh.lecturereservation.infra.entity.types.HistoryActionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "participant_history")
@@ -31,7 +32,8 @@ public class ParticipantHistoryEntity {
     private Long studentId;
 
     @Column(name = "action_type", length = 6, nullable = false)
-    private String actionType;
+    @Enumerated(EnumType.STRING)
+    private HistoryActionType actionType;
 
     @Column(name = "action_date", nullable = false)
     private LocalDateTime actionDate;

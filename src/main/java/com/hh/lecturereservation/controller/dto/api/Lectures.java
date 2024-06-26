@@ -1,6 +1,6 @@
 package com.hh.lecturereservation.controller.dto.api;
 
-import com.hh.lecturereservation.controller.dto.Lecture;
+import com.hh.lecturereservation.domain.dto.Lecture;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

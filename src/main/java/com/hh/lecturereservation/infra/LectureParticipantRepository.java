@@ -1,6 +1,6 @@
 package com.hh.lecturereservation.infra;
 
-import com.hh.lecturereservation.domain.entity.LectureParticipantEntity;
+import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

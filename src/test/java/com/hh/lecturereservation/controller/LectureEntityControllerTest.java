@@ -3,7 +3,7 @@ package com.hh.lecturereservation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hh.lecturereservation.controller.dto.api.Apply;
 import com.hh.lecturereservation.domain.LectureService;
-import com.hh.lecturereservation.domain.entity.LectureEntity;
+import com.hh.lecturereservation.infra.entity.LectureEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import static net.bytebuddy.matcher.ElementMatchers.is;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -38,9 +39,14 @@ class LectureEntityControllerTest {
     @MockBean
     LectureService lectureService;
 
+    private Long studentId;
+    private Long lectureId;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+        studentId = 1L;
+        lectureId = 1L;
     }
 
     /**
@@ -84,10 +90,11 @@ class LectureEntityControllerTest {
     @Test
     void apply() throws Exception {
         Apply.Request req = Apply.Request.builder()
-                .studentId(1L)
+                .studentId(studentId)
+                .lectureId(lectureId)
                 .build();
 
-        given(lectureService.applyLectures(any(Apply.Request.class)))
+        given(lectureService.applyLectures(anyLong(), anyLong()))
                 .willReturn(true);
 
         mockMvc.perform(post("/lectures/apply")

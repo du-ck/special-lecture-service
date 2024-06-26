@@ -1,4 +1,7 @@
 package com.hh.lecturereservation.controller.dto.api.data;
 
-public class ErrorResponse {
+public record ErrorResponse(
+        String code,
+        String message
+) {
 }

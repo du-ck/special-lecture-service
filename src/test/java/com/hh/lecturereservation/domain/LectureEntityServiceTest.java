@@ -1,11 +1,10 @@
 package com.hh.lecturereservation.domain;
 
-import com.hh.lecturereservation.controller.dto.api.Apply;
-import com.hh.lecturereservation.controller.dto.api.Lectures;
-import com.hh.lecturereservation.domain.entity.LectureEntity;
-import com.hh.lecturereservation.domain.entity.LectureParticipantEntity;
-import com.hh.lecturereservation.domain.entity.StudentEntity;
+import com.hh.lecturereservation.infra.entity.LectureEntity;
+import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;
+import com.hh.lecturereservation.infra.entity.StudentEntity;
 import com.hh.lecturereservation.exception.ApplyException;
+import com.hh.lecturereservation.exception.ResourceNotFoundException;
 import com.hh.lecturereservation.infra.LectureParticipantRepository;
 import com.hh.lecturereservation.infra.LectureRepository;
 import com.hh.lecturereservation.infra.ParticipantHistoryRepository;
@@ -113,10 +112,7 @@ class LectureEntityServiceTest {
                         .participantDate(LocalDateTime.now())
                         .build());
 
-        boolean result = lectureService.applyLectures(Apply.Request.builder()
-                .lectureId(lectureId)
-                .studentId(studentId)
-                .build());
+        boolean result = lectureService.applyLectures(studentId, lectureId);
 
         Assertions.assertTrue(result);
     }
@@ -143,10 +139,7 @@ class LectureEntityServiceTest {
                 .willReturn(Optional.of(student));
 
         Exception exception = Assertions.assertThrows(ApplyException.class,
-                () -> lectureService.applyLectures(Apply.Request.builder()
-                        .lectureId(lectureId)
-                        .studentId(studentId)
-                        .build()));
+                () -> lectureService.applyLectures(studentId, lectureId));
 
         Assertions.assertEquals("정원 초과입니다", exception.getMessage());
     }
@@ -180,10 +173,7 @@ class LectureEntityServiceTest {
                 .willReturn(returnList);
 
         Exception exception = Assertions.assertThrows(ApplyException.class,
-                () -> lectureService.applyLectures(Apply.Request.builder()
-                        .lectureId(lectureId)
-                        .studentId(studentId)
-                        .build()));
+                () -> lectureService.applyLectures(studentId, lectureId));
 
         //예외 메세지 검증
         Assertions.assertEquals("이미 신청한 수업입니다", exception.getMessage());
@@ -206,11 +196,8 @@ class LectureEntityServiceTest {
         given(studentRepository.findById(studentId))
                 .willReturn(Optional.empty());
 
-        Exception exception = Assertions.assertThrows(ApplyException.class,
-                () -> lectureService.applyLectures(Apply.Request.builder()
-                        .lectureId(lectureId)
-                        .studentId(studentId)
-                        .build()));
+        Exception exception = Assertions.assertThrows(ResourceNotFoundException.class,
+                () -> lectureService.applyLectures(studentId, lectureId));
 
         //예외 메세지 검증
         Assertions.assertEquals("존재하지 않는 학생입니다", exception.getMessage());
@@ -224,11 +211,8 @@ class LectureEntityServiceTest {
         given(lectureRepository.findById(lectureId))
                 .willReturn(Optional.empty());
 
-        Exception exception = Assertions.assertThrows(ApplyException.class,
-                () -> lectureService.applyLectures(Apply.Request.builder()
-                        .lectureId(lectureId)
-                        .studentId(studentId)
-                        .build()));
+        Exception exception = Assertions.assertThrows(ResourceNotFoundException.class,
+                () -> lectureService.applyLectures(studentId, lectureId));
 
         //예외 메세지 검증
         Assertions.assertEquals("존재하지 않는 특강입니다", exception.getMessage());

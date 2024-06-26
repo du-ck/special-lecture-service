@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.domain.entity;
+package com.hh.lecturereservation.infra.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

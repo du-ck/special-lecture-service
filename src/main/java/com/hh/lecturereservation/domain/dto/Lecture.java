@@ -1,6 +1,6 @@
-package com.hh.lecturereservation.controller.dto;
+package com.hh.lecturereservation.domain.dto;
 
-import com.hh.lecturereservation.domain.entity.LectureEntity;
+import com.hh.lecturereservation.infra.entity.LectureEntity;
 import com.hh.lecturereservation.utils.DateUtils;
 import lombok.Builder;
 import lombok.Getter;

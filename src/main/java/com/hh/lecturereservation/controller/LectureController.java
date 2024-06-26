@@ -1,11 +1,11 @@
 package com.hh.lecturereservation.controller;
 
-import com.hh.lecturereservation.controller.dto.Lecture;
+import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.controller.dto.api.Lectures;
 import com.hh.lecturereservation.controller.dto.api.data.ResponseData;
 import com.hh.lecturereservation.controller.dto.api.Apply;
 import com.hh.lecturereservation.domain.LectureService;
-import com.hh.lecturereservation.domain.entity.LectureEntity;
+import com.hh.lecturereservation.infra.entity.LectureEntity;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,7 +63,7 @@ public class LectureController {
     public ResponseEntity<ResponseData> apply(
             @RequestBody Apply.Request request
             ) throws Exception {
-        boolean result = lectureService.applyLectures(request);
+        boolean result = lectureService.applyLectures(request.getStudentId(), request.getLectureId());
         ResponseData responseData = ResponseData.builder()
                 .data(result)
                 .build();
