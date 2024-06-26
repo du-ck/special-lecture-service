@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.entity;
+package com.hh.lecturereservation.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "lecture")
-public class Lecture {
+public class LectureEntity {
     @Id
     @Column(name = "lecture_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,19 +23,18 @@ public class Lecture {
     @Column(length = 50, nullable = false)
     private String title;
 
+    @Column(length = 10, nullable = false)
+    private String lecturer;
+
     @Column(length = 100, nullable = false)
     private String description;
 
     @Column(nullable = false)
-    private int capacity;
-
-    @Builder.Default
-    @Column(nullable = false)
-    private char active = 'N';
+    private Long capacity;
 
     @Column(name = "lecture_date", nullable = false)
     private LocalDateTime lectureDate;
 
     @Column(name = "current_enrollment", nullable = false)
-    private int currentEnrollment;
+    private Long currentEnrollment;
 }

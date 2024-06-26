@@ -3,7 +3,7 @@ package com.hh.lecturereservation.utils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public final class DateUtil {
+public final class DateUtils {
 
     /**
      * LocalDateTime 형태로 그대로 받으면 중간에 들어가는 T 제거

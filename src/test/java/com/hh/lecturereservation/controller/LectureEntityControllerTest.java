@@ -1,8 +1,9 @@
 package com.hh.lecturereservation.controller;
 
-import com.hh.lecturereservation.dto.detail.LectureDetail;
-import com.hh.lecturereservation.dto.response.LecturesResponse;
-import com.hh.lecturereservation.service.LectureService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.hh.lecturereservation.controller.dto.api.Apply;
+import com.hh.lecturereservation.domain.LectureService;
+import com.hh.lecturereservation.domain.entity.LectureEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -17,16 +18,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static net.bytebuddy.matcher.ElementMatchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(LectureController.class)
-class LectureControllerTest {
+class LectureEntityControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
+    @Autowired
+    private ObjectMapper objMapper;
 
     @MockBean
     LectureService lectureService;
@@ -41,28 +48,25 @@ class LectureControllerTest {
      */
     @Test
     void lectures() throws Exception {
-        List<LectureDetail> returnList = new ArrayList<>();
-        returnList.add(LectureDetail.builder()
+        List<LectureEntity> returnList = new ArrayList<>();
+        returnList.add(LectureEntity.builder()
                 .title("백엔드")
                 .description("백엔드 플러스")
-                .capacity(30)
+                .capacity(30L)
                 .lectureDate(LocalDateTime.now())
-                .currentEnrollment(10)
+                .currentEnrollment(10L)
                 .build());
-        returnList.add(LectureDetail.builder()
+        returnList.add(LectureEntity.builder()
                 .title("프론트엔드")
                 .description("프론트엔드 플러스")
-                .capacity(40)
+                .capacity(40L)
                 .lectureDate(LocalDateTime.now())
-                .currentEnrollment(20)
+                .currentEnrollment(20L)
                 .build());
 
-        LecturesResponse lecturesResponse = LecturesResponse.builder()
-                .lectures(returnList)
-                .build();
 
         given(lectureService.getLectures())
-                .willReturn(Optional.of(lecturesResponse));
+                .willReturn(Optional.of(returnList));
 
         mockMvc.perform(get("/lectures/")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -72,5 +76,24 @@ class LectureControllerTest {
                 .andExpect(jsonPath("$.data.lectures[*].capacity").exists())
                 .andExpect(jsonPath("$.data.lectures[*].lectureDate").exists())
                 .andExpect(jsonPath("$.data.lectures[*].currentEnrollment").exists());
+    }
+
+    /**
+     * POST 요청을 통해 특강 신청 기능의 정상여부 판단을 위해 작성
+     */
+    @Test
+    void apply() throws Exception {
+        Apply.Request req = Apply.Request.builder()
+                .studentId(1L)
+                .build();
+
+        given(lectureService.applyLectures(any(Apply.Request.class)))
+                .willReturn(true);
+
+        mockMvc.perform(post("/lectures/apply")
+                        .content(objMapper.writeValueAsString(req))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data").value(true));
     }
 }

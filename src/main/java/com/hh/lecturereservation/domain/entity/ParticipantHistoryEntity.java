@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.entity;
+package com.hh.lecturereservation.domain.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "participant_history")
-public class ParticipantHistory {
+public class ParticipantHistoryEntity {
 
     @Id
     @Column(name = "history_id")
@@ -22,13 +22,13 @@ public class ParticipantHistory {
     private Long historyId;
 
     @Column(name = "participant_id", nullable = false)
-    private int participantId;
+    private Long participantId;
 
     @Column(name = "lecture_id", nullable = false)
-    private int lectureId;
+    private Long lectureId;
 
     @Column(name = "student_id", nullable = false)
-    private int studentId;
+    private Long studentId;
 
     @Column(name = "action_type", length = 6, nullable = false)
     private String actionType;

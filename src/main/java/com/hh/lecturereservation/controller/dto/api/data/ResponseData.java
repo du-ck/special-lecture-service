@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.dto.common.data;
+package com.hh.lecturereservation.controller.dto.api.data;
 
 import lombok.Builder;
 import lombok.Data;

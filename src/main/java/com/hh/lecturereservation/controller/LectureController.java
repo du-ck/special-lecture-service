@@ -1,10 +1,11 @@
 package com.hh.lecturereservation.controller;
 
-import com.hh.lecturereservation.dto.common.data.ResponseData;
-import com.hh.lecturereservation.dto.detail.LectureDetail;
-import com.hh.lecturereservation.dto.request.ApplyRequest;
-import com.hh.lecturereservation.dto.response.LecturesResponse;
-import com.hh.lecturereservation.service.LectureService;
+import com.hh.lecturereservation.controller.dto.Lecture;
+import com.hh.lecturereservation.controller.dto.api.Lectures;
+import com.hh.lecturereservation.controller.dto.api.data.ResponseData;
+import com.hh.lecturereservation.controller.dto.api.Apply;
+import com.hh.lecturereservation.domain.LectureService;
+import com.hh.lecturereservation.domain.entity.LectureEntity;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,10 +37,14 @@ public class LectureController {
                 .data("No Data")
                 .build();
 
-        Optional<LecturesResponse> lectures = lectureService.getLectures();
+        Optional<List<LectureEntity>> lectures = lectureService.getLectures();
         if (lectures.isPresent()) {
+            Lectures.Response lecturesResponse = Lectures.Response.builder()
+                    .lectures(Lecture.toDtoList(lectures.get()))
+                    .build();
+
             responseData = ResponseData.builder()
-                    .data(lectures.get())
+                    .data(lecturesResponse)
                     .build();
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         }
@@ -57,11 +61,13 @@ public class LectureController {
      */
     @PostMapping("/apply")
     public ResponseEntity<ResponseData> apply(
-            @RequestBody ApplyRequest request
-            ) {
+            @RequestBody Apply.Request request
+            ) throws Exception {
+        boolean result = lectureService.applyLectures(request);
         ResponseData responseData = ResponseData.builder()
-                .data(null)
+                .data(result)
                 .build();
+
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
