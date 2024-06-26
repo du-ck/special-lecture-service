@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.infra.entity.types;
+package com.hh.lecturereservation.domain.dto.types;
 
 /**
  * History 의 Action 종류

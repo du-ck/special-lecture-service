@@ -1,13 +1,15 @@
 package com.hh.lecturereservation.infra;
 
-import com.hh.lecturereservation.infra.entity.LectureEntity;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+
+import com.hh.lecturereservation.domain.dto.Lecture;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
-@Repository
-public interface LectureRepository extends JpaRepository<LectureEntity, Long> {
-    List<LectureEntity> findByLectureDateAfter(LocalDateTime localDateTime);
+public interface LectureRepository {
+    List<Lecture> findByLectureDateAfter(LocalDateTime localDateTime);
+
+    Optional<Lecture> findById(Long lectureId);
+    Optional<Lecture> save(Lecture lecture);
 }

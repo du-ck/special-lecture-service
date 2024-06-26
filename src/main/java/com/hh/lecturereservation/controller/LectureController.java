@@ -68,11 +68,15 @@ public class LectureController {
     public ResponseEntity<ResponseData> apply(
             @RequestBody Apply.Request request
             ) throws Exception {
-        boolean result = lectureService.applyLectures(request.getStudentId(), request.getLectureId());
+        Optional<LectureParticipant> result = lectureService.applyLectures(request.getStudentId(), request.getLectureId());
         ResponseData responseData = ResponseData.builder()
-                .data(result)
+                .data(Apply.Response.builder()
+                        .participantId(result.get().getParticipantId())
+                        .studentId(result.get().getStudentId())
+                        .studentName(result.get().getStudentName())
+                        .lecture(result.get().getLecture())
+                        .build())
                 .build();
-
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 

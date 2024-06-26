@@ -1,5 +1,7 @@
 package com.hh.lecturereservation.infra.entity;
 
+import com.hh.lecturereservation.domain.dto.Lecture;
+import com.hh.lecturereservation.domain.dto.Student;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,4 +31,14 @@ public class StudentEntity {
 
     @Column(length = 50, nullable = false, unique = true)
     private String email;
+
+    public static Student toDto(StudentEntity entity) {
+        return Student.builder()
+                .studentId(entity.getStudentId())
+                .id(entity.getId())
+                .name(entity.getName())
+                .phone(entity.getPhone())
+                .email(entity.getEmail())
+                .build();
+    }
 }

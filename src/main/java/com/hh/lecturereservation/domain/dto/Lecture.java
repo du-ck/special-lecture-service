@@ -1,36 +1,20 @@
 package com.hh.lecturereservation.domain.dto;
 
-import com.hh.lecturereservation.infra.entity.LectureEntity;
-import com.hh.lecturereservation.utils.DateUtils;
+import com.hh.lecturereservation.domain.dto.types.LectureType;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-@Builder
+@Builder(toBuilder = true)
 @Getter
 public class Lecture {
     private Long lectureId;
     private String title;
     private String lecturer;
     private String description;
+    private LectureType lectureType;
     private Long capacity;
-    private String lectureDate;
+    private LocalDateTime lectureDate;
     private Long currentEnrollment;
-
-    public static Lecture toDto(LectureEntity lectureEntity) {
-        return Lecture.builder()
-                .lectureId(lectureEntity.getLectureId())
-                .title(lectureEntity.getTitle())
-                .description(lectureEntity.getDescription())
-                .lecturer(lectureEntity.getLecturer())
-                .capacity(lectureEntity.getCapacity())
-                .lectureDate(DateUtils.removeTAndUntilMinute(lectureEntity.getLectureDate()))
-                .currentEnrollment(lectureEntity.getCurrentEnrollment())
-                .build();
-    }
-
-    public static List<Lecture> toDtoList(List<LectureEntity> lectureEntityList) {
-        return lectureEntityList.stream().map(m -> Lecture.toDto(m)).toList();
-    }
 }

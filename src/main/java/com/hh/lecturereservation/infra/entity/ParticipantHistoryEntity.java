@@ -1,6 +1,8 @@
 package com.hh.lecturereservation.infra.entity;
 
-import com.hh.lecturereservation.infra.entity.types.HistoryActionType;
+import com.hh.lecturereservation.domain.dto.Lecture;
+import com.hh.lecturereservation.domain.dto.ParticipantHistory;
+import com.hh.lecturereservation.domain.dto.types.HistoryActionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -37,4 +40,31 @@ public class ParticipantHistoryEntity {
 
     @Column(name = "action_date", nullable = false)
     private LocalDateTime actionDate;
+
+
+    public static ParticipantHistory toDto(ParticipantHistoryEntity entity) {
+        return ParticipantHistory.builder()
+                .historyId(entity.getHistoryId())
+                .participantId(entity.getParticipantId())
+                .lectureId(entity.getLectureId())
+                .studentId(entity.getStudentId())
+                .actionType(entity.getActionType())
+                .actionDate(entity.getActionDate())
+                .build();
+    }
+
+    public static List<ParticipantHistory> toDtoList(List<ParticipantHistoryEntity> entityList) {
+        return entityList.stream().map(m -> ParticipantHistoryEntity.toDto(m)).toList();
+    }
+
+    public static ParticipantHistoryEntity toEntity(ParticipantHistory domain) {
+        return ParticipantHistoryEntity.builder()
+                .historyId(domain.getHistoryId())
+                .participantId(domain.getParticipantId())
+                .lectureId(domain.getLectureId())
+                .studentId(domain.getStudentId())
+                .actionType(domain.getActionType())
+                .actionDate(domain.getActionDate())
+                .build();
+    }
 }

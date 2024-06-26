@@ -5,6 +5,7 @@ import com.hh.lecturereservation.controller.dto.api.Apply;
 import com.hh.lecturereservation.domain.LectureService;
 import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.domain.dto.LectureParticipant;
+import com.hh.lecturereservation.domain.dto.types.LectureType;
 import com.hh.lecturereservation.infra.entity.LectureEntity;
 import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;
 import com.hh.lecturereservation.infra.entity.StudentEntity;
@@ -58,15 +59,15 @@ class LectureControllerTest {
      */
     @Test
     void lectures() throws Exception {
-        List<LectureEntity> returnList = new ArrayList<>();
-        returnList.add(LectureEntity.builder()
+        List<Lecture> returnList = new ArrayList<>();
+        returnList.add(Lecture.builder()
                 .title("백엔드")
                 .description("백엔드 플러스")
                 .capacity(30L)
                 .lectureDate(LocalDateTime.now())
                 .currentEnrollment(10L)
                 .build());
-        returnList.add(LectureEntity.builder()
+        returnList.add(Lecture.builder()
                 .title("프론트엔드")
                 .description("프론트엔드 플러스")
                 .capacity(40L)
@@ -76,7 +77,7 @@ class LectureControllerTest {
 
 
         given(lectureService.getLectures())
-                .willReturn(Optional.of(Lecture.toDtoList(returnList)));
+                .willReturn(Optional.of(returnList));
 
         mockMvc.perform(get("/lectures/")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -97,15 +98,43 @@ class LectureControllerTest {
                 .studentId(studentId)
                 .lectureId(lectureId)
                 .build();
+        LectureParticipant result = LectureParticipant.builder()
+                .participantId(1L)
+                .lecture(Lecture.builder()
+                        .title("백엔드")
+                        .description("백엔드 플러스")
+                        .lectureId(lectureId)
+                        .lecturer("신형만")
+                        .lectureType(LectureType.JAVA)
+                        .capacity(30L)
+                        .lectureDate(LocalDateTime.now())
+                        .currentEnrollment(10L)
+                        .build())
+                .studentId(studentId)
+                .studentName("짱구")
+                .lectureDate(LocalDateTime.now().plusDays(1))
+                .participantDate(LocalDateTime.now())
+                .build();
 
         given(lectureService.applyLectures(anyLong(), anyLong()))
-                .willReturn(true);
+                .willReturn(Optional.of(result));
 
         mockMvc.perform(post("/lectures/apply")
                         .content(objMapper.writeValueAsString(req))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data").value(true));
+                .andExpect(jsonPath("$.data.participantId").exists())
+                .andExpect(jsonPath("$.data.studentId").exists())
+                .andExpect(jsonPath("$.data.studentName").exists())
+                .andExpect(jsonPath("$.data.lecture").exists())
+                .andExpect(jsonPath("$.data.lecture.lectureId").exists())
+                .andExpect(jsonPath("$.data.lecture.title").exists())
+                .andExpect(jsonPath("$.data.lecture.lecturer").exists())
+                .andExpect(jsonPath("$.data.lecture.description").exists())
+                .andExpect(jsonPath("$.data.lecture.lectureType").exists())
+                .andExpect(jsonPath("$.data.lecture.capacity").exists())
+                .andExpect(jsonPath("$.data.lecture.lectureDate").exists())
+                .andExpect(jsonPath("$.data.lecture.currentEnrollment").exists());
     }
 
     /**
@@ -114,24 +143,27 @@ class LectureControllerTest {
      */
     @Test
     void isSuccess() throws Exception {
-        List<LectureParticipantEntity> returnList = new ArrayList<>();
-        returnList.add(LectureParticipantEntity.builder()
+        List<LectureParticipant> returnList = new ArrayList<>();
+        returnList.add(LectureParticipant.builder()
                 .participantId(1L)
-                        .lectureEntity(LectureEntity.builder()
-                                .title("백엔드")
-                                .description("백엔드 플러스")
-                                .capacity(30L)
-                                .lectureDate(LocalDateTime.now())
-                                .currentEnrollment(10L)
-                                .build())
-                        .studentEntity(StudentEntity.builder()
-                                .studentId(studentId)
-                                .name("짱구")
-                                .build())
+                .lecture(Lecture.builder()
+                        .title("백엔드")
+                        .description("백엔드 플러스")
+                        .lectureId(lectureId)
+                        .lecturer("신형만")
+                        .lectureType(LectureType.JAVA)
+                        .capacity(30L)
+                        .lectureDate(LocalDateTime.now())
+                        .currentEnrollment(10L)
+                        .build())
+                .studentId(studentId)
+                .studentName("짱구")
+                .lectureDate(LocalDateTime.now().plusDays(1))
+                .participantDate(LocalDateTime.now())
                 .build());
 
         given(lectureService.getLectureParticipant(anyLong()))
-                .willReturn(Optional.of(LectureParticipant.toDtoList(returnList)));
+                .willReturn(Optional.of(returnList));
 
         mockMvc.perform(get("/lectures/application/{userId}", studentId)
                         .contentType(MediaType.APPLICATION_JSON))
