@@ -27,7 +27,7 @@ import java.util.Optional;
 import static org.mockito.BDDMockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class LectureEntityServiceTest {
+class LectureServiceTest {
 
     @InjectMocks
     private LectureService lectureService;
