@@ -1,5 +1,7 @@
 package com.hh.lecturereservation.domain;
 
+import com.hh.lecturereservation.domain.dto.Lecture;
+import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import com.hh.lecturereservation.infra.entity.LectureEntity;
 import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;
 import com.hh.lecturereservation.infra.entity.StudentEntity;
@@ -76,7 +78,7 @@ class LectureEntityServiceTest {
         given(lectureRepository.findByLectureDateAfter(any(LocalDateTime.class)))
                 .willReturn(returnList);
 
-        Optional<List<LectureEntity>> result = lectureService.getLectures();
+        Optional<List<Lecture>> result = lectureService.getLectures();
 
         Assertions.assertNotNull(result.get());
         Assertions.assertEquals(2, result.get().size());
@@ -111,6 +113,8 @@ class LectureEntityServiceTest {
                 .willReturn(LectureParticipantEntity.builder()
                         .participantDate(LocalDateTime.now())
                         .build());
+        given(lectureRepository.save(any(LectureEntity.class)))
+                .willReturn(lecture);
 
         boolean result = lectureService.applyLectures(studentId, lectureId);
 
@@ -216,5 +220,34 @@ class LectureEntityServiceTest {
 
         //예외 메세지 검증
         Assertions.assertEquals("존재하지 않는 특강입니다", exception.getMessage());
+    }
+
+    /**
+     * 특강 신청 완료 여부 조회 기능성공 여부 테스트
+     */
+    @Test
+    void 신청완료여부_조회() {
+        List<LectureParticipantEntity> returnList = new ArrayList<>();
+        returnList.add(LectureParticipantEntity.builder()
+                .participantId(1L)
+                .lectureEntity(LectureEntity.builder()
+                        .title("백엔드")
+                        .description("백엔드 플러스")
+                        .capacity(30L)
+                        .lectureDate(LocalDateTime.now())
+                        .currentEnrollment(10L)
+                        .build())
+                .studentEntity(StudentEntity.builder()
+                        .studentId(studentId)
+                        .build())
+                .build());
+
+        given(lectureParticipantRepository.getLectureParticipant(anyLong()))
+                .willReturn(returnList);
+
+        Optional<List<LectureParticipant>> result = lectureService.getLectureParticipant(studentId);
+
+        Assertions.assertNotNull(result.get());
+        Assertions.assertEquals(1, result.get().size());
     }
 }

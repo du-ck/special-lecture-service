@@ -3,7 +3,11 @@ package com.hh.lecturereservation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hh.lecturereservation.controller.dto.api.Apply;
 import com.hh.lecturereservation.domain.LectureService;
+import com.hh.lecturereservation.domain.dto.Lecture;
+import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import com.hh.lecturereservation.infra.entity.LectureEntity;
+import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;
+import com.hh.lecturereservation.infra.entity.StudentEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.MockitoAnnotations;
@@ -72,7 +76,7 @@ class LectureEntityControllerTest {
 
 
         given(lectureService.getLectures())
-                .willReturn(Optional.of(returnList));
+                .willReturn(Optional.of(Lecture.toDtoList(returnList)));
 
         mockMvc.perform(get("/lectures/")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -102,5 +106,42 @@ class LectureEntityControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data").value(true));
+    }
+
+    /**
+     * GET 요청을 통해 특강 신청 완료 여부 기능의 정상여부 판단을 위해 작성
+     * @throws Exception
+     */
+    @Test
+    void isSuccess() throws Exception {
+        List<LectureParticipantEntity> returnList = new ArrayList<>();
+        returnList.add(LectureParticipantEntity.builder()
+                .participantId(1L)
+                        .lectureEntity(LectureEntity.builder()
+                                .title("백엔드")
+                                .description("백엔드 플러스")
+                                .capacity(30L)
+                                .lectureDate(LocalDateTime.now())
+                                .currentEnrollment(10L)
+                                .build())
+                        .studentEntity(StudentEntity.builder()
+                                .studentId(studentId)
+                                .name("짱구")
+                                .build())
+                .build());
+
+        given(lectureService.getLectureParticipant(anyLong()))
+                .willReturn(Optional.of(LectureParticipant.toDtoList(returnList)));
+
+        mockMvc.perform(get("/lectures/application/{userId}", studentId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.userId").exists())
+                .andExpect(jsonPath("$.data.userName").exists())
+                .andExpect(jsonPath("$.data.lectures[*].title").exists())
+                .andExpect(jsonPath("$.data.lectures[*].description").exists())
+                .andExpect(jsonPath("$.data.lectures[*].capacity").exists())
+                .andExpect(jsonPath("$.data.lectures[*].lectureDate").exists())
+                .andExpect(jsonPath("$.data.lectures[*].currentEnrollment").exists());
     }
 }

@@ -17,4 +17,9 @@ public interface LectureParticipantRepository extends JpaRepository<LectureParti
     List<LectureParticipantEntity> checkLectureParticipant(
             @Param("studentId") Long studentId,
             @Param("lectureId") Long lectureId);
+
+    @Query("select lp from LectureParticipantEntity lp join fetch lp.studentEntity " +
+            "join fetch lp.lectureEntity " +
+            "where lp.studentEntity.studentId = :studentId")
+    List<LectureParticipantEntity> getLectureParticipant(@Param("studentId") Long studentId);
 }

@@ -1,6 +1,7 @@
 package com.hh.lecturereservation.domain;
 
 import com.hh.lecturereservation.domain.dto.Lecture;
+import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import com.hh.lecturereservation.infra.ParticipantHistoryRepository;
 import com.hh.lecturereservation.infra.entity.LectureEntity;
 import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,9 +30,10 @@ public class LectureService {
     private final StudentRepository studentRepository;
     private final ParticipantHistoryRepository participantHistoryRepository;
 
-    public Optional<List<LectureEntity>> getLectures() {
+    public Optional<List<Lecture>> getLectures() {
         List<LectureEntity> lectureList = lectureRepository.findByLectureDateAfter(LocalDateTime.now());
-        return Optional.of(lectureList);
+        List<Lecture> returnList = Lecture.toDtoList(lectureList);
+        return Optional.of(returnList);
     }
 
     public boolean applyLectures(long studentId, long lectureId) throws Exception {
@@ -102,5 +105,11 @@ public class LectureService {
             participantHistoryRepository.save(history);
         }
         return false;
+    }
+
+    public Optional<List<LectureParticipant>> getLectureParticipant(long studentId) {
+        List<LectureParticipantEntity> lectureParticipantList = lectureParticipantRepository.getLectureParticipant(studentId);
+        List<LectureParticipant> returnList = LectureParticipant.toDtoList(lectureParticipantList);
+        return Optional.of(returnList);
     }
 }

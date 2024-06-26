@@ -1,18 +1,21 @@
 package com.hh.lecturereservation.controller;
 
+import com.hh.lecturereservation.controller.dto.api.participationLectures;
 import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.controller.dto.api.Lectures;
 import com.hh.lecturereservation.controller.dto.api.data.ResponseData;
 import com.hh.lecturereservation.controller.dto.api.Apply;
 import com.hh.lecturereservation.domain.LectureService;
-import com.hh.lecturereservation.infra.entity.LectureEntity;
+import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,17 +40,19 @@ public class LectureController {
                 .data("No Data")
                 .build();
 
-        Optional<List<LectureEntity>> lectures = lectureService.getLectures();
-        if (lectures.isPresent()) {
-            Lectures.Response lecturesResponse = Lectures.Response.builder()
-                    .lectures(Lecture.toDtoList(lectures.get()))
-                    .build();
+        Optional<List<Lecture>> lectures = lectureService.getLectures();
 
-            responseData = ResponseData.builder()
-                    .data(lecturesResponse)
-                    .build();
+        if (CollectionUtils.isEmpty(lectures.get())) {
             return new ResponseEntity<>(responseData, HttpStatus.OK);
         }
+
+        Lectures.Response lecturesResponse = Lectures.Response.builder()
+                .lectures(lectures.get())
+                .build();
+
+        responseData = ResponseData.builder()
+                .data(lecturesResponse)
+                .build();
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
@@ -73,16 +78,37 @@ public class LectureController {
 
     /**
      * 신청완료 여부를 조회할 수 있는 api
-     * 신청 성공시 true 실패시 false
-     * @param id
+     * 
+     *
      * @return
      */
-    @GetMapping("/application/{id}")
-    public ResponseEntity<ResponseData> isSuccess(
-            @PathVariable(name = "id") String id
-    ) {
+    @GetMapping("/application/{userId}")
+    public ResponseEntity<ResponseData> participationLectures(
+            @PathVariable(name = "userId") long userId
+            ) {
         ResponseData responseData = ResponseData.builder()
-                .data(null)
+                .data("No Data")
+                .build();
+
+        Optional<List<LectureParticipant>> result = lectureService.getLectureParticipant(userId);
+
+        if (CollectionUtils.isEmpty(result.get())) {
+            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        }
+
+        List<Lecture> lectures = result.get().stream()
+                .map(m -> m.getLecture())
+                .sorted(Comparator.comparing(Lecture::getLectureDate))
+                .toList();
+        String userName = result.get().stream().map(name -> name.getStudentName()).findFirst().get();
+        participationLectures.Response response = participationLectures.Response.builder()
+                .userId(userId)
+                .userName(userName)
+                .lectures(lectures)
+                .build();
+
+        responseData = ResponseData.builder()
+                .data(response)
                 .build();
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
