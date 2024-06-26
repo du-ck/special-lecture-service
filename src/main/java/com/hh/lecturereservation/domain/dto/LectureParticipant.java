@@ -13,7 +13,5 @@ public class LectureParticipant {
     private Lecture lecture;
     private Long studentId;
     private String studentName;
-    private LocalDateTime lectureDate;
     private LocalDateTime participantDate;
-    private LectureType lectureType;
 }

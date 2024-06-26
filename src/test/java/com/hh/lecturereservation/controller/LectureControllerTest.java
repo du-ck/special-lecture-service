@@ -64,14 +64,14 @@ class LectureControllerTest {
                 .title("백엔드")
                 .description("백엔드 플러스")
                 .capacity(30L)
-                .lectureDate(LocalDateTime.now())
+                .lectureDate(LocalDateTime.now().plusDays(1))
                 .currentEnrollment(10L)
                 .build());
         returnList.add(Lecture.builder()
                 .title("프론트엔드")
                 .description("프론트엔드 플러스")
                 .capacity(40L)
-                .lectureDate(LocalDateTime.now())
+                .lectureDate(LocalDateTime.now().plusDays(1))
                 .currentEnrollment(20L)
                 .build());
 
@@ -107,12 +107,11 @@ class LectureControllerTest {
                         .lecturer("신형만")
                         .lectureType(LectureType.JAVA)
                         .capacity(30L)
-                        .lectureDate(LocalDateTime.now())
+                        .lectureDate(LocalDateTime.now().plusDays(1))
                         .currentEnrollment(10L)
                         .build())
                 .studentId(studentId)
                 .studentName("짱구")
-                .lectureDate(LocalDateTime.now().plusDays(1))
                 .participantDate(LocalDateTime.now())
                 .build();
 
@@ -153,12 +152,11 @@ class LectureControllerTest {
                         .lecturer("신형만")
                         .lectureType(LectureType.JAVA)
                         .capacity(30L)
-                        .lectureDate(LocalDateTime.now())
+                        .lectureDate(LocalDateTime.now().plusDays(1))
                         .currentEnrollment(10L)
                         .build())
                 .studentId(studentId)
                 .studentName("짱구")
-                .lectureDate(LocalDateTime.now().plusDays(1))
                 .participantDate(LocalDateTime.now())
                 .build());
 

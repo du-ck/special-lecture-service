@@ -4,7 +4,9 @@ import com.hh.lecturereservation.controller.LectureController;
 import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import com.hh.lecturereservation.domain.dto.ParticipantHistory;
+import com.hh.lecturereservation.domain.dto.Student;
 import com.hh.lecturereservation.domain.dto.types.HistoryActionType;
+import com.hh.lecturereservation.domain.dto.types.LectureType;
 import com.hh.lecturereservation.infra.*;
 import com.hh.lecturereservation.exception.ApplyException;
 import com.hh.lecturereservation.exception.ResourceNotFoundException;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
@@ -19,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class LectureService {
     private static final Logger log = LoggerFactory.getLogger(LectureService.class);
@@ -51,30 +55,28 @@ public class LectureService {
                     () -> new ResourceNotFoundException("존재하지 않는 특강입니다")
             );
 
-            studentRepository.findById(studentId).orElseThrow(
+            Student student = studentRepository.findById(studentId).orElseThrow(
                     () -> new ResourceNotFoundException("존재하지 않는 학생입니다")
             );
 
             //특강 최대정원이 현재등록자보다 많아야 함.
             if (lecture.getCurrentEnrollment() < lecture.getCapacity()) {
                 //1. select LectureParticipant  여기서 같은날짜 같은강의에 이력이있는지 체크 (Empty 여야 이력이 없는 것)
-                Optional<List<LectureParticipant>> resultList = lectureParticipantRepository.checkLectureParticipant(studentId, lectureId); //todo lock
+                Optional<List<LectureParticipant>> resultList = lectureParticipantRepository.checkLectureParticipant(studentId, lecture); //todo lock
                 if (CollectionUtils.isEmpty(resultList.get())) {
                     //2. insert LectureParticipant
+                    lecture.enroll();
                     LectureParticipant lectureParticipantEntity = LectureParticipant.builder()
                             .lecture(lecture)
                             .studentId(studentId)
                             .participantDate(LocalDateTime.now())
+                            .studentName(student.getName())
                             .build();
 
                     Optional<LectureParticipant> saveItem = lectureParticipantRepository.save(lectureParticipantEntity);
                     if (saveItem.isPresent()) {
                         //3. lecture update (capacity 및 current enroll 변경)
-                        lecture = lecture.toBuilder()
-                                .currentEnrollment(lecture.getCurrentEnrollment() + 1)
-                                .build();
                         Optional<Lecture> saveLecture = lectureRepository.save(lecture);
-
                         if (saveLecture.isPresent()) {
                             history = history.toBuilder()
                                     .participantId(saveItem.get().getParticipantId())

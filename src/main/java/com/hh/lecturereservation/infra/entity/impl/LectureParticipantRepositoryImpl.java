@@ -1,5 +1,6 @@
 package com.hh.lecturereservation.infra.entity.impl;
 
+import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import com.hh.lecturereservation.infra.LectureParticipantJpaRepository;
 import com.hh.lecturereservation.infra.LectureParticipantRepository;
@@ -17,8 +18,8 @@ public class LectureParticipantRepositoryImpl implements LectureParticipantRepos
     private final LectureParticipantJpaRepository jpaRepository;
 
     @Override
-    public Optional<List<LectureParticipant>> checkLectureParticipant(Long studentId, Long lectureId) {
-        List<LectureParticipantEntity> resultList = jpaRepository.checkLectureParticipant(studentId, lectureId);
+    public Optional<List<LectureParticipant>> checkLectureParticipant(Long studentId, Lecture lecture) {
+        List<LectureParticipantEntity> resultList = jpaRepository.checkLectureParticipant(studentId, lecture);
         return Optional.of(LectureParticipantEntity.toDtoList(resultList));
     }
 
@@ -30,7 +31,8 @@ public class LectureParticipantRepositoryImpl implements LectureParticipantRepos
 
     @Override
     public Optional<LectureParticipant> save(LectureParticipant lectureParticipant) {
-        Optional<LectureParticipantEntity> lectureParticipantEntity = Optional.of(jpaRepository.save(LectureParticipantEntity.toEntity(lectureParticipant)));
+        LectureParticipantEntity entity = LectureParticipantEntity.toEntity(lectureParticipant);
+        Optional<LectureParticipantEntity> lectureParticipantEntity = Optional.of(jpaRepository.save(entity));
         if (lectureParticipantEntity.isPresent()) {
             return Optional.of(LectureParticipantEntity.toDto(lectureParticipantEntity.get()));
         }

@@ -1,6 +1,8 @@
 package com.hh.lecturereservation.domain.dto;
 
 import com.hh.lecturereservation.domain.dto.types.LectureType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,4 +19,8 @@ public class Lecture {
     private Long capacity;
     private LocalDateTime lectureDate;
     private Long currentEnrollment;
+
+    public void enroll() {
+        this.currentEnrollment++;
+    }
 }

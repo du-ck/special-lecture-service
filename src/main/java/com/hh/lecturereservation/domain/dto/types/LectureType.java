@@ -7,5 +7,7 @@ package com.hh.lecturereservation.domain.dto.types;
 public enum LectureType {
     JAVA,
     REACT,
-    PHP
+    PHP,
+    VUE,
+    TDD
 }

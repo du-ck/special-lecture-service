@@ -51,6 +51,7 @@ public class LectureEntity {
                 .lectureId(lectureEntity.getLectureId())
                 .title(lectureEntity.getTitle())
                 .description(lectureEntity.getDescription())
+                .lectureType(lectureEntity.getLectureType())
                 .lecturer(lectureEntity.getLecturer())
                 .capacity(lectureEntity.getCapacity())
                 .lectureDate(lectureEntity.getLectureDate())

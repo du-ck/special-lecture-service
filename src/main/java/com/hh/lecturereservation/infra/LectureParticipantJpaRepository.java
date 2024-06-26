@@ -1,5 +1,6 @@
 package com.hh.lecturereservation.infra;
 
+import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,10 +12,12 @@ public interface LectureParticipantJpaRepository extends JpaRepository<LecturePa
     @Query("select lp from LectureParticipantEntity lp join fetch lp.studentEntity " +
             "join fetch lp.lectureEntity " +
             "where lp.studentEntity.studentId = :studentId " +
-            "and lp.lectureEntity.lectureId = :lectureId")
+            "and FORMATDATETIME(lp.lectureEntity.lectureDate, 'yyyy-MM-dd') = FORMATDATETIME(:#{#lecture.lectureDate}, 'yyyy-MM-dd') " +
+            "and lp.lectureEntity.lecturer = :#{#lecture.lecturer} " +
+            "and lp.lectureEntity.lectureType = :#{#lecture.lectureType}")
     List<LectureParticipantEntity> checkLectureParticipant(
             @Param("studentId") Long studentId,
-            @Param("lectureId") Long lectureId);
+            @Param("lecture") Lecture lecture);
 
     @Query("select lp from LectureParticipantEntity lp join fetch lp.studentEntity " +
             "join fetch lp.lectureEntity " +
