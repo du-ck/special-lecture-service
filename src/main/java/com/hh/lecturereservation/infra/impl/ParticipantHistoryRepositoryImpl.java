@@ -1,7 +1,7 @@
-package com.hh.lecturereservation.infra.entity.impl;
+package com.hh.lecturereservation.infra.impl;
 
 import com.hh.lecturereservation.domain.dto.ParticipantHistory;
-import com.hh.lecturereservation.infra.ParticipantHistoryJpaRepository;
+import com.hh.lecturereservation.infra.jpa.ParticipantHistoryJpaRepository;
 import com.hh.lecturereservation.infra.ParticipantHistoryRepository;
 import com.hh.lecturereservation.infra.entity.ParticipantHistoryEntity;
 import lombok.RequiredArgsConstructor;
@@ -24,5 +24,11 @@ public class ParticipantHistoryRepositoryImpl implements ParticipantHistoryRepos
     @Override
     public void deleteAll() {
         jpaRepository.deleteAll();
+    }
+
+    @Override
+    public Optional<List<ParticipantHistory>> findByLectureId(Long lectureId) {
+        List<ParticipantHistoryEntity> resultList = jpaRepository.findByLectureId(lectureId);
+        return Optional.of(ParticipantHistoryEntity.toDtoList(resultList));
     }
 }

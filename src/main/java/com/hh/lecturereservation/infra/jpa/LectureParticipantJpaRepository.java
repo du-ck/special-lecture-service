@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.infra;
+package com.hh.lecturereservation.infra.jpa;
 
 import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.infra.entity.LectureParticipantEntity;

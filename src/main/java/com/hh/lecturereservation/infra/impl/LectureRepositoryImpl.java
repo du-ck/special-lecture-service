@@ -1,7 +1,7 @@
-package com.hh.lecturereservation.infra.entity.impl;
+package com.hh.lecturereservation.infra.impl;
 
 import com.hh.lecturereservation.domain.dto.Lecture;
-import com.hh.lecturereservation.infra.LectureJpaRepository;
+import com.hh.lecturereservation.infra.jpa.LectureJpaRepository;
 import com.hh.lecturereservation.infra.LectureRepository;
 import com.hh.lecturereservation.infra.entity.LectureEntity;
 import lombok.RequiredArgsConstructor;

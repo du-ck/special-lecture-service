@@ -1,4 +1,4 @@
-package com.hh.lecturereservation.infra;
+package com.hh.lecturereservation.infra.jpa;
 
 import com.hh.lecturereservation.infra.entity.LectureEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

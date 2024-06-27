@@ -5,6 +5,7 @@ import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import com.hh.lecturereservation.domain.dto.ParticipantHistory;
 import com.hh.lecturereservation.domain.dto.Student;
 import com.hh.lecturereservation.domain.dto.types.HistoryActionType;
+import com.hh.lecturereservation.domain.lock.LockHelper;
 import com.hh.lecturereservation.infra.*;
 import com.hh.lecturereservation.exception.ApplyException;
 import com.hh.lecturereservation.exception.ResourceNotFoundException;
@@ -22,7 +23,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class LectureService {
     private static final Logger log = LoggerFactory.getLogger(LectureService.class);
@@ -30,6 +30,7 @@ public class LectureService {
     private final LectureParticipantRepository lectureParticipantRepository;
     private final StudentRepository studentRepository;
     private final ParticipantHistoryRepository participantHistoryRepository;
+    private final LockHelper lockHelper;
 
     public Optional<List<Lecture>> getLectures() {
         List<Lecture> lectureList = lectureRepository.findByLectureDateAfter(LocalDateTime.now());
@@ -37,6 +38,7 @@ public class LectureService {
     }
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
+    //@Transactional
     public Optional<LectureParticipant> applyLectures(long studentId, long lectureId) throws Exception {
         //userid 기준 선착순
         //같은 날짜, 같은 강의는 신청 불가 (이미 신청한 수업이면 불가)
@@ -51,10 +53,13 @@ public class LectureService {
                 .actionDate(LocalDateTime.now())
                 .build();
 
+        long stamp = lockHelper.getWriteLock(); // 쓰기 잠금 획득
+
         try {
             Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(
                     () -> new ResourceNotFoundException("존재하지 않는 특강입니다")
             );
+            System.out.println("before start lecture currentEnrollment : " + lecture.getCurrentEnrollment());
 
             Student student = studentRepository.findById(studentId).orElseThrow(
                     () -> new ResourceNotFoundException("존재하지 않는 학생입니다")
@@ -66,7 +71,6 @@ public class LectureService {
                 Optional<List<LectureParticipant>> resultList = lectureParticipantRepository.checkLectureParticipant(studentId, lecture); //todo lock
                 if (CollectionUtils.isEmpty(resultList.get())) {
                     //2. insert LectureParticipant
-                    lecture.enroll();
                     LectureParticipant lectureParticipant = LectureParticipant.builder()
                             .lecture(lecture)
                             .studentId(studentId)
@@ -77,7 +81,12 @@ public class LectureService {
                     Optional<LectureParticipant> saveItem = lectureParticipantRepository.save(lectureParticipant);
                     if (saveItem.isPresent()) {
                         //3. lecture update (capacity 및 current enroll 변경)
+                        log.info("current lecture enoll!! :: " + lecture.getCurrentEnrollment());
+                        lecture.enroll();
+                        log.info("after lecture enoll!! :: " + lecture.getCurrentEnrollment());
                         Optional<Lecture> saveLecture = lectureRepository.save(lecture);
+                        log.info("lecture update!! :: " + saveLecture.get().getCurrentEnrollment());
+                        log.info("student name!! :: " + saveItem.get().getStudentName());
                         if (saveLecture.isPresent()) {
                             history = history.toBuilder()
                                     .participantId(saveItem.get().getParticipantId())
@@ -95,11 +104,16 @@ public class LectureService {
                 throw new ApplyException("정원 초과입니다");
             }
         } finally {
+            lockHelper.loseWriteLock(stamp);
             try {
                 //4. insert participant_history
+                //unit Test를 위해 따로 try-문에 담음
                 participantHistoryRepository.save(history);
             } catch (Exception e) {
                 log.error(e.getMessage());
+            }
+            finally {
+                //lockHelper.loseWriteLock(stamp);
             }
         }
         return Optional.empty();
