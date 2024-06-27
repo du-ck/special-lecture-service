@@ -15,4 +15,7 @@ public interface LectureParticipantRepository {
     Optional<List<LectureParticipant>> checkLectureParticipant(Long studentId, Lecture lecture);
     Optional<List<LectureParticipant>> getLectureParticipant(Long studentId);
     Optional<LectureParticipant> save(LectureParticipant lectureParticipant);
+
+    Optional<List<LectureParticipant>> getLectureParticipantMember(Lecture lecture);
+    void deleteAll();
 }

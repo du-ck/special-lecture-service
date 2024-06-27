@@ -1,18 +1,18 @@
 package com.hh.lecturereservation.domain;
 
-import com.hh.lecturereservation.controller.LectureController;
 import com.hh.lecturereservation.domain.dto.Lecture;
 import com.hh.lecturereservation.domain.dto.LectureParticipant;
 import com.hh.lecturereservation.domain.dto.ParticipantHistory;
 import com.hh.lecturereservation.domain.dto.Student;
 import com.hh.lecturereservation.domain.dto.types.HistoryActionType;
-import com.hh.lecturereservation.domain.dto.types.LectureType;
 import com.hh.lecturereservation.infra.*;
 import com.hh.lecturereservation.exception.ApplyException;
 import com.hh.lecturereservation.exception.ResourceNotFoundException;
+import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -36,6 +36,7 @@ public class LectureService {
         return Optional.of(lectureList);
     }
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     public Optional<LectureParticipant> applyLectures(long studentId, long lectureId) throws Exception {
         //userid 기준 선착순
         //같은 날짜, 같은 강의는 신청 불가 (이미 신청한 수업이면 불가)
@@ -66,14 +67,14 @@ public class LectureService {
                 if (CollectionUtils.isEmpty(resultList.get())) {
                     //2. insert LectureParticipant
                     lecture.enroll();
-                    LectureParticipant lectureParticipantEntity = LectureParticipant.builder()
+                    LectureParticipant lectureParticipant = LectureParticipant.builder()
                             .lecture(lecture)
                             .studentId(studentId)
                             .participantDate(LocalDateTime.now())
                             .studentName(student.getName())
                             .build();
 
-                    Optional<LectureParticipant> saveItem = lectureParticipantRepository.save(lectureParticipantEntity);
+                    Optional<LectureParticipant> saveItem = lectureParticipantRepository.save(lectureParticipant);
                     if (saveItem.isPresent()) {
                         //3. lecture update (capacity 및 current enroll 변경)
                         Optional<Lecture> saveLecture = lectureRepository.save(lecture);

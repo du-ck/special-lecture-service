@@ -23,7 +23,10 @@ public class StudentRepositoryImpl implements StudentRepository {
 
     @Override
     public Optional<Student> findById(Long studentId) {
-        Optional<Student> lecture = Optional.of(StudentEntity.toDto(jpaRepository.findById(studentId).get()));
-        return lecture;
+        Optional<StudentEntity> findStudentEntity = jpaRepository.findById(studentId);
+        if (findStudentEntity.isPresent()) {
+            return Optional.of(StudentEntity.toDto(findStudentEntity.get()));
+        }
+        return Optional.empty();
     }
 }

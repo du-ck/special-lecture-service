@@ -23,4 +23,11 @@ public interface LectureParticipantJpaRepository extends JpaRepository<LecturePa
             "join fetch lp.lectureEntity " +
             "where lp.studentEntity.studentId = :studentId")
     List<LectureParticipantEntity> getLectureParticipant(@Param("studentId") Long studentId);
+
+    @Query("select lp from LectureParticipantEntity lp join fetch lp.studentEntity " +
+            "join fetch lp.lectureEntity " +
+            "where FORMATDATETIME(lp.lectureEntity.lectureDate, 'yyyy-MM-dd') = FORMATDATETIME(:#{#lecture.lectureDate}, 'yyyy-MM-dd') " +
+            "and lp.lectureEntity.lecturer = :#{#lecture.lecturer} " +
+            "and lp.lectureEntity.lectureType = :#{#lecture.lectureType}")
+    List<LectureParticipantEntity> getLectureParticipantMember(@Param("lecture") Lecture lecture);
 }

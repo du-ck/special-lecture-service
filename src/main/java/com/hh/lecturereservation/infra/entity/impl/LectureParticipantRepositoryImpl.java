@@ -38,4 +38,15 @@ public class LectureParticipantRepositoryImpl implements LectureParticipantRepos
         }
         return Optional.empty();
     }
+
+    @Override
+    public Optional<List<LectureParticipant>> getLectureParticipantMember(Lecture lecture) {
+        List<LectureParticipantEntity> resultList = jpaRepository.getLectureParticipantMember(lecture);
+        return Optional.of(LectureParticipantEntity.toDtoList(resultList));
+    }
+
+    @Override
+    public void deleteAll() {
+        jpaRepository.deleteAll();
+    }
 }

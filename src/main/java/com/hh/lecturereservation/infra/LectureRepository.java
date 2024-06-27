@@ -12,4 +12,5 @@ public interface LectureRepository {
 
     Optional<Lecture> findById(Long lectureId);
     Optional<Lecture> save(Lecture lecture);
+    void deleteAll();
 }

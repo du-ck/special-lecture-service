@@ -7,4 +7,5 @@ import java.util.Optional;
 
 public interface ParticipantHistoryRepository  {
     boolean save(ParticipantHistory history);
+    void deleteAll();
 }

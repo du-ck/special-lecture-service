@@ -14,25 +14,33 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 public class LectureRepositoryImpl implements LectureRepository {
-    private final LectureJpaRepository lectureJpaRepository;
+    private final LectureJpaRepository jpaRepository;
 
     @Override
     public List<Lecture> findByLectureDateAfter(LocalDateTime localDateTime) {
-        return LectureEntity.toDtoList(lectureJpaRepository.findByLectureDateAfter(localDateTime));
+        return LectureEntity.toDtoList(jpaRepository.findByLectureDateAfter(localDateTime));
     }
 
     @Override
     public Optional<Lecture> findById(Long lectureId) {
-        Optional<Lecture> lecture = Optional.of(LectureEntity.toDto(lectureJpaRepository.findById(lectureId).get()));
-        return lecture;
+        Optional<LectureEntity> findLectureEntity = jpaRepository.findById(lectureId);
+        if (findLectureEntity.isPresent()) {
+            return Optional.of(LectureEntity.toDto(findLectureEntity.get()));
+        }
+        return Optional.empty();
     }
 
     @Override
     public Optional<Lecture> save(Lecture lecture) {
-        Optional<LectureEntity> lectureEntity = Optional.of(lectureJpaRepository.save(LectureEntity.toEntity(lecture)));
+        Optional<LectureEntity> lectureEntity = Optional.of(jpaRepository.save(LectureEntity.toEntity(lecture)));
         if (lectureEntity.isPresent()) {
             return Optional.of(LectureEntity.toDto(lectureEntity.get()));
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void deleteAll() {
+        jpaRepository.deleteAll();
     }
 }
