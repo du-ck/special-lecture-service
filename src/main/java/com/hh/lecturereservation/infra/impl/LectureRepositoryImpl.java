@@ -22,7 +22,7 @@ public class LectureRepositoryImpl implements LectureRepository {
     }
 
     @Override
-    public Optional<Lecture> findById(Long lectureId) {
+    public Optional<Lecture> findByIdWithLock(Long lectureId) {
         Optional<LectureEntity> findLectureEntity = jpaRepository.findById(lectureId);
         if (findLectureEntity.isPresent()) {
             return Optional.of(LectureEntity.toDto(findLectureEntity.get()));

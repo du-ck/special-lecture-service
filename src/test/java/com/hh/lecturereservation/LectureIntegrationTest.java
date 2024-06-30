@@ -10,16 +10,11 @@ import com.hh.lecturereservation.infra.LectureParticipantRepository;
 import com.hh.lecturereservation.infra.LectureRepository;
 import com.hh.lecturereservation.infra.ParticipantHistoryRepository;
 import com.hh.lecturereservation.infra.entity.LectureEntity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -97,7 +92,7 @@ public class LectureIntegrationTest {
 
         exMsg.forEach(msg -> System.out.println("exception Message :: " + msg));
         //lecture 의 현재 수강인원이 numThreads 와 같은지 비교
-        Optional<Lecture> lecture = lectureRepository.findById(saveLecture.get().getLectureId());
+        Optional<Lecture> lecture = lectureRepository.findByIdWithLock(saveLecture.get().getLectureId());
         System.out.println("신청 전 인원 : " +  saveLecture.get().getCurrentEnrollment() + " / 신청 후 인원 : " + lecture.get().getCurrentEnrollment());
         System.out.println("신청완료정보에 들어간 인원 " + members.get().size());
 
@@ -155,7 +150,7 @@ public class LectureIntegrationTest {
         //exMsg list로 정원 초과 입니다 < 의 갯수 파악 가능.
         exMsg.forEach(msg -> System.out.println("exception Message :: " + msg));
         //lecture 의 현재 수강인원이 numThreads 와 같은지 비교
-        Optional<Lecture> lecture = lectureRepository.findById(saveLecture.get().getLectureId());
+        Optional<Lecture> lecture = lectureRepository.findByIdWithLock(saveLecture.get().getLectureId());
         System.out.println("신청 전 인원 : " +  saveLecture.get().getCurrentEnrollment() + " / 신청 후 인원 : " + lecture.get().getCurrentEnrollment());
         System.out.println("신청정보에 들어간 인원 " + members.get().size());
 

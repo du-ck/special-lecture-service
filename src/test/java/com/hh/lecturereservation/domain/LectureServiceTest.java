@@ -108,7 +108,7 @@ class LectureServiceTest {
                 .studentId(studentId)
                 .build();
 
-        given(lectureRepository.findById(lectureId))
+        given(lectureRepository.findByIdWithLock(lectureId))
                 .willReturn(Optional.of(frontLecture));
         given(studentRepository.findById(studentId))
                 .willReturn(Optional.of(student));
@@ -153,7 +153,7 @@ class LectureServiceTest {
                 .actionDate(LocalDateTime.now())
                 .build();
 
-        given(lectureRepository.findById(lectureId))
+        given(lectureRepository.findByIdWithLock(lectureId))
                 .willReturn(Optional.of(lecture));
         given(studentRepository.findById(studentId))
                 .willReturn(Optional.of(student));
@@ -171,7 +171,7 @@ class LectureServiceTest {
      */
     @Test
     void 존재하지_않는_학생() {
-        given(lectureRepository.findById(lectureId))
+        given(lectureRepository.findByIdWithLock(lectureId))
                 .willReturn(Optional.of(frontLecture));
         given(studentRepository.findById(studentId))
                 .willReturn(Optional.empty());
@@ -188,7 +188,7 @@ class LectureServiceTest {
      */
     @Test
     void 존재하지_않는_특강() {
-        given(lectureRepository.findById(lectureId))
+        given(lectureRepository.findByIdWithLock(lectureId))
                 .willReturn(Optional.empty());
 
         Exception exception = Assertions.assertThrows(ResourceNotFoundException.class,

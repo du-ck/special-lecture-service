@@ -9,11 +9,9 @@ import com.hh.lecturereservation.domain.lock.LockHelper;
 import com.hh.lecturereservation.infra.*;
 import com.hh.lecturereservation.exception.ApplyException;
 import com.hh.lecturereservation.exception.ResourceNotFoundException;
-import jakarta.persistence.LockModeType;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -37,8 +35,8 @@ public class LectureService {
         return Optional.of(lectureList);
     }
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
-    //@Transactional
+
+    @Transactional
     public Optional<LectureParticipant> applyLectures(long studentId, long lectureId) throws Exception {
         //userid 기준 선착순
         //같은 날짜, 같은 강의는 신청 불가 (이미 신청한 수업이면 불가)
@@ -56,7 +54,7 @@ public class LectureService {
         long stamp = lockHelper.getWriteLock(); // 쓰기 잠금 획득
 
         try {
-            Lecture lecture = lectureRepository.findById(lectureId).orElseThrow(
+            Lecture lecture = lectureRepository.findByIdWithLock(lectureId).orElseThrow(
                     () -> new ResourceNotFoundException("존재하지 않는 특강입니다")
             );
             System.out.println("before start lecture currentEnrollment : " + lecture.getCurrentEnrollment());
@@ -81,12 +79,8 @@ public class LectureService {
                     Optional<LectureParticipant> saveItem = lectureParticipantRepository.save(lectureParticipant);
                     if (saveItem.isPresent()) {
                         //3. lecture update (capacity 및 current enroll 변경)
-                        log.info("current lecture enoll!! :: " + lecture.getCurrentEnrollment());
                         lecture.enroll();
-                        log.info("after lecture enoll!! :: " + lecture.getCurrentEnrollment());
                         Optional<Lecture> saveLecture = lectureRepository.save(lecture);
-                        log.info("lecture update!! :: " + saveLecture.get().getCurrentEnrollment());
-                        log.info("student name!! :: " + saveItem.get().getStudentName());
                         if (saveLecture.isPresent()) {
                             history = history.toBuilder()
                                     .participantId(saveItem.get().getParticipantId())

@@ -42,17 +42,15 @@ public class LectureController {
 
         Optional<List<Lecture>> lectures = lectureService.getLectures();
 
-        if (CollectionUtils.isEmpty(lectures.get())) {
-            return new ResponseEntity<>(responseData, HttpStatus.OK);
+        if (!CollectionUtils.isEmpty(lectures.get())) {
+            Lectures.Response lecturesResponse = Lectures.Response.builder()
+                    .lectures(lectures.get())
+                    .build();
+
+            responseData = ResponseData.builder()
+                    .data(lecturesResponse)
+                    .build();
         }
-
-        Lectures.Response lecturesResponse = Lectures.Response.builder()
-                .lectures(lectures.get())
-                .build();
-
-        responseData = ResponseData.builder()
-                .data(lecturesResponse)
-                .build();
         return new ResponseEntity<>(responseData, HttpStatus.OK);
     }
 
